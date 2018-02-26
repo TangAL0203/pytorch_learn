@@ -79,6 +79,7 @@ class Linear(nn.Module):
 
 # 定义输入参数是Tensor的Function
 class MulConstant(Function):
+    from torch.autograd.function import once_differentiable
     @staticmethod
     def forward(ctx, tensor, constant):
         # ctx is a context object that can be used to stash information
@@ -88,9 +89,11 @@ class MulConstant(Function):
         return tensor * constant
 
     @staticmethod
+    @once_differentiable
     def backward(ctx, grad_output):
         # We return as many input gradients as there were arguments.
         # Gradients of non-Tensor arguments to forward must be None.
+        print("type of grad_output is: ",type(grad_output))
         return grad_output * ctx.constant, None  # 这里并没有涉及到Variable
 
 mulcon = MulConstant.apply
